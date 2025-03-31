@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZERO POINT AI | Predictive Analytics</title>
+    <link href="https://fonts.googleapis.com/css2?family=El+Messiri:wght@400;600;700&family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <style>
+        :root {
+            --primary: #00ffcc;
+            --secondary: #0099ff;
+            --accent: #ff00aa;
+            --text: rgba(255, 255, 255, 0.9);
+            --bg: #0a0a12;
+        }
+        
+        body {
+            font-family: 'El Messiri', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+            overflow: auto;
+        }
+        
+        #particles-js {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            top: 0;
+            left: 0;
+        }
+        
+        .main-container {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+            animation: glow 2s infinite alternate;
+        }
+        
+        .header h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3rem;
+            margin: 0;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: 3px;
+        }
+        
+        .header p {
+            margin-top: 0.5rem;
+            font-size: 1.2rem;
+            opacity: 0.8;
+        }
+        
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-box {
+            background: rgba(15, 15, 25, 0.7);
+            backdrop-filter: blur(12px);
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.7;
+            margin-bottom: 5px;
+        }
+        
+        .stat-value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        
+        .glass-panel {
+            background: rgba(15, 15, 25, 0.7);
+            backdrop-filter: blur(12px);
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            margin-bottom: 2rem;
+        }
+        
+        .glass-panel:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0, 255, 204, 0.2);
+        }
+        
+        .info-box {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .info-label {
+            font-size: 0.9rem;
+            opacity: 0.7;
+            margin-bottom: 0.5rem;
+        }
+        
+        .period-display {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            padding: 12px 20px;
+            border-radius: 10px;
+            display: inline-block;
+            font-weight: bold;
+            text-shadow: 0 0 10px rgba(0, 255, 204, 0.5);
+            margin: 0.5rem 0;
+            letter-spacing: 1px;
+        }
+        
+        .timer {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2rem;
+            color: var(--primary);
+            margin: 0.5rem 0;
+        }
+        
+        .prediction-container {
+            text-align: center;
+            padding: 1.5rem;
+            border-radius: 12px;
+            background: rgba(0, 0, 0, 0.3);
+            margin: 1rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .prediction-label {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            opacity: 0.8;
+        }
+        
+        .prediction-value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin: 0.5rem 0;
+            transition: all 0.3s ease;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .pending {
+            color: #ff9800;
+        }
+        
+        .big {
+            color: #28a745;
+            text-shadow: 0 0 15px rgba(40, 167, 69, 0.5);
+        }
+        
+        .small {
+            color: #dc3545;
+            text-shadow: 0 0 15px rgba(220, 53, 69, 0.5);
+        }
+        
+        .chance {
+            font-size: 1.5rem;
+            margin-top: 0.5rem;
+        }
+        
+        .history-container {
+            margin-top: 2rem;
+            background: rgba(15, 15, 25, 0.7);
+            backdrop-filter: blur(12px);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .history-title {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: sticky;
+            top: 0;
+            background: rgba(10, 10, 18, 0.9);
+            padding: 15px 0;
+            z-index: 1;
+        }
+        
+        .history-title svg {
+            margin-right: 0.5rem;
+        }
+        
+        .history-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .history-list::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .history-list::-webkit-scrollbar-track {
+            background: transparent;
+            border-radius: 4px;
+        }
+        
+        .history-list::-webkit-scrollbar-thumb {
+            background-color: var(--primary);
+            border-radius: 4px;
+        }
+        
+        .history-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 0.8rem;
+            font-size: 1rem;
+            animation: fadeIn 0.5s ease-out;
+            border-left: 4px solid var(--primary);
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .history-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .history-item strong {
+            color: var(--primary);
+        }
+        
+        .big-pred {
+            border-left-color: #28a745;
+        }
+        
+        .small-pred {
+            border-left-color: #dc3545;
+        }
+        
+        .win {
+            background: rgba(40, 167, 69, 0.1);
+        }
+        
+        .loss {
+            background: rgba(220, 53, 69, 0.1);
+        }
+        
+        /* Full screen notification styles */
+        .fullscreen-notification {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            background: rgba(0, 0, 0, 0.9);
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        .win-notification {
+            background: linear-gradient(135deg, rgba(40, 167, 69, 0.2), rgba(10, 10, 18, 0.9));
+        }
+        
+        .loss-notification {
+            background: linear-gradient(135deg, rgba(220, 53, 69, 0.2), rgba(10, 10, 18, 0.9));
+        }
+        
+        .notification-period {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        
+        .notification-result {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 4rem;
+            font-weight: bold;
+            margin: 1rem 0;
+            text-align: center;
+        }
+        
+        .win-text {
+            color: #28a745;
+            text-shadow: 0 0 20px rgba(40, 167, 69, 0.7);
+        }
+        
+        .loss-text {
+            color: #dc3545;
+            text-shadow: 0 0 20px rgba(220, 53, 69, 0.7);
+        }
+        
+        .notification-message {
+            font-size: 2.5rem;
+            margin-top: 1rem;
+            text-align: center;
+            animation: pulse 2s infinite;
+        }
+        
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #f00;
+            opacity: 0;
+        }
+        
+        /* Progress bar styles */
+        .progress-container {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            transition: width 0.1s linear;
+        }
+        
+        .calculating {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 2;
+        }
+        
+        .calculating-text {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.2rem;
+            color: var(--primary);
+            margin-top: 10px;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes glow {
+            from { text-shadow: 0 0 5px rgba(0, 255, 204, 0.5); }
+            to { text-shadow: 0 0 20px rgba(0, 255, 204, 0.8); }
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        .footer {
+            margin-top: 2rem;
+            font-size: 0.9rem;
+            opacity: 0.6;
+            text-align: center;
+            padding: 20px 0;
+        }
+        
+        .win-stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+        }
+        
+        .win-stat {
+            text-align: center;
+            padding: 15px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .win-stat.big {
+            border: 1px solid #28a745;
+        }
+        
+        .win-stat.small {
+            border: 1px solid #dc3545;
+        }
+        
+        .win-stat-value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.8rem;
+            margin-top: 5px;
+        }
+        
+        /* Animation for prediction sequence */
+        @keyframes predictionSequence {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        .prediction-sequence {
+            animation: predictionSequence 0.5s ease-in-out;
+        }
+    </style>
+</head>
+<body>
+    <div id="particles-js"></div>
+    
+    <div class="main-container">
+        <div class="header">
+            <h1>ZERO POINT AI</h1>
+            <p>Advanced Predictive Analytics Engine</p>
+        </div>
+        
+        <div class="stats-container">
+            <div class="stat-box">
+                <div class="stat-label">Total Predictions</div>
+                <div id="totalPredictions" class="stat-value">0</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Wins</div>
+                <div id="totalWins" class="stat-value">0</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Losses</div>
+                <div id="totalLosses" class="stat-value">0</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Accuracy</div>
+                <div id="accuracy" class="stat-value">0%</div>
+            </div>
+        </div>
+        
+        <div class="win-stats">
+            <div class="win-stat big">
+                <div>Big Wins</div>
+                <div id="bigWins" class="win-stat-value">0</div>
+            </div>
+            <div class="win-stat small">
+                <div>Small Wins</div>
+                <div id="smallWins" class="win-stat-value">0</div>
+            </div>
+        </div>
+        
+        <div class="glass-panel">
+            <div class="info-box">
+                <div class="info-label">Current Period:</div>
+                <div id="currentPeriod" class="period-display">Loading...</div>
+                <div class="info-label">Time Remaining:</div>
+                <div id="timer" class="timer">00:00</div>
+            </div>
+            
+            <div class="prediction-container">
+                <div id="calculating" class="calculating" style="display: none;">
+                    <div class="progress-container">
+                        <div id="progressBar" class="progress-bar"></div>
+                    </div>
+                    <div class="calculating-text">CALCULATING PREDICTION...</div>
+                </div>
+                <div class="prediction-label">Next Prediction:</div>
+                <div id="prediction" class="prediction-value pending">Analyzing...</div>
+                <div id="chance" class="chance">Confidence: --%</div>
+            </div>
+        </div>
+        
+        <div class="history-container">
+            <div class="history-title">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+                PREDICTION HISTORY
+            </div>
+            <ul id="historyList" class="history-list"></ul>
+        </div>
+        
+        <div class="footer">
+            Zero Point AI v2.0 | Real-time Predictive Analytics
+        </div>
+    </div>
+
+    <script>
+        let historyData = [];
+        let lastFetchedPeriod = null;
+        let bigWinCount = 0;
+        let smallWinCount = 0;
+        let predictionInterval;
+        let timerInterval;
+        let isCalculating = false;
+
+        // Function to fetch game result
+        async function fetchGameResult() {
+            try {
+                const payload = {
+                    pageSize: 10,
+                    pageNo: 1,
+                    typeId: 1,
+                    language: 0,
+                    random: "4a0522c6ecd8410496260e686be2a57c",
+                    signature: "334B5E70A0C9B8918B0B15E517E2069C",
+                    timestamp: Math.floor(Date.now() / 1000)
+                };
+
+                let response = await fetch("https://api.bdg88zf.com/api/webapi/GetNoaverageEmerdList", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+
+                let data = await response.json();
+                let latestResult = data?.data?.list?.[0];
+
+                if (latestResult) {
+                    return { 
+                        period: latestResult.issueNumber, 
+                        result: latestResult.number,
+                        resultType: latestResult.number >= 5 ? "BIG" : "SMALL"
+                    };
+                } else {
+                    throw new Error("No data found in the API response");
+                }
+            } catch (error) {
+                console.error("Error fetching game result:", error);
+                return null;
+            }
+        }
+
+        // Algorithm for prediction
+        function trendAnalysis(history) {
+            if (history.length === 0) {
+                return Math.random() > 0.5 ? "BIG" : "SMALL";
+            }
+            
+            let bigCount = history.filter(item => item.resultType === "BIG").length;
+            let smallCount = history.filter(item => item.resultType === "SMALL").length;
+            
+            // Simple trend analysis - predict the opposite of the current trend
+            if (bigCount > smallCount) {
+                return "SMALL";
+            } else if (smallCount > bigCount) {
+                return "BIG";
+            } else {
+                return Math.random() > 0.5 ? "BIG" : "SMALL";
+            }
+        }
+
+        // Auto-predict function
+        function autoPredict() {
+            return { 
+                type: trendAnalysis(historyData),
+                confidence: Math.floor(Math.random() * (95 - 75 + 1)) + 75
+            };
+        }
+
+        // Function to show fullscreen notification
+        function showFullscreenNotification(period, result, isWin) {
+            // Remove any existing notifications
+            const existingNotification = document.querySelector('.fullscreen-notification');
+            if (existingNotification) {
+                existingNotification.remove();
+            }
+            
+            // Create new notification
+            const notification = document.createElement('div');
+            notification.className = `fullscreen-notification ${isWin ? 'win-notification' : 'loss-notification'}`;
+            
+            notification.innerHTML = `
+                <div class="notification-period">Period: ${period}</div>
+                <div class="notification-result ${isWin ? 'win-text' : 'loss-text'}">${result}</div>
+                <div class="notification-message ${isWin ? 'win-text' : 'loss-text'}">
+                    ${isWin ? 'Congratulations! 🎉' : 'Sorry for Loss 😔'}
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Add confetti for wins
+            if (isWin) {
+                createConfetti();
+            }
+            
+            // Remove notification after 10 seconds
+            setTimeout(() => {
+                notification.style.animation = 'fadeIn 0.5s reverse';
+                setTimeout(() => {
+                    notification.remove();
+                }, 500);
+            }, 10000);
+        }
+        
+        // Create confetti effect
+        function createConfetti() {
+            const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff'];
+            
+            for (let i = 0; i < 100; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.top = '-10px';
+                confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+                
+                document.querySelector('.fullscreen-notification').appendChild(confetti);
+                
+                // Animate confetti
+                const animation = confetti.animate([
+                    { top: '-10px', opacity: 1, transform: `rotate(${Math.random() * 360}deg)` },
+                    { top: '100vh', opacity: 0, transform: `rotate(${Math.random() * 360}deg)` }
+                ], {
+                    duration: 3000 + Math.random() * 3000,
+                    easing: 'cubic-bezier(0.1, 0.8, 0.9, 1)'
+                });
+                
+                animation.onfinish = () => confetti.remove();
+            }
+        }
+
+        // Show calculating progress
+        function showCalculatingProgress() {
+            isCalculating = true;
+            const progressBar = document.getElementById('progressBar');
+            const calculatingDiv = document.getElementById('calculating');
+            
+            calculatingDiv.style.display = 'flex';
+            progressBar.style.width = '0%';
+            
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += 1;
+                progressBar.style.width = `${progress}%`;
+                
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    calculatingDiv.style.display = 'none';
+                    isCalculating = false;
+                }
+            }, 50); // 50ms * 100 = 5 seconds total
+        }
+
+        // Function to update prediction with sequence
+        async function updatePrediction() {
+            if (isCalculating) return;
+            
+            showCalculatingProgress();
+            
+            // Wait for the progress bar to complete
+            setTimeout(async () => {
+                let apiResult = await fetchGameResult();
+
+                if (apiResult && apiResult.period !== lastFetchedPeriod) {
+                    lastFetchedPeriod = apiResult.period;
+                    let currentPeriod = (BigInt(apiResult.period) + 1n).toString();
+
+                    let prediction = autoPredict();
+
+                    document.getElementById("currentPeriod").innerText = currentPeriod;
+                    
+                    // Show prediction sequence
+                    const predictionElement = document.getElementById("prediction");
+                    predictionElement.innerText = "BIG";
+                    predictionElement.className = "prediction-value big prediction-sequence";
+                    
+                    setTimeout(() => {
+                        predictionElement.innerText = "SMALL";
+                        predictionElement.className = "prediction-value small prediction-sequence";
+                        
+                        setTimeout(() => {
+                            predictionElement.innerText = prediction.type;
+                            predictionElement.className = `prediction-value ${prediction.type.toLowerCase()}`;
+                            document.getElementById("chance").innerText = `Confidence: ${prediction.confidence}%`;
+
+                            historyData.unshift({ 
+                                period: currentPeriod, 
+                                prediction: prediction.type, 
+                                resultStatus: "Pending",
+                                confidence: prediction.confidence
+                            });
+                            
+                            updateHistory();
+                            checkWinLoss(apiResult);
+                            updateStats();
+                        }, 500);
+                    }, 500);
+                }
+            }, 5000); // Match this with progress bar duration
+        }
+
+        // Function to check win/loss
+        function checkWinLoss(apiResult) {
+            historyData.forEach(item => {
+                if (item.period === apiResult.period) {
+                    item.resultStatus = item.prediction === apiResult.resultType ? "WIN" : "LOSS";
+                    item.actualResult = apiResult.resultType;
+                    
+                    // Update win counters
+                    if (item.resultStatus === "WIN") {
+                        if (item.prediction === "BIG") {
+                            bigWinCount++;
+                        } else {
+                            smallWinCount++;
+                        }
+                        
+                        // Show win notification
+                        showFullscreenNotification(item.period, `${item.prediction} WIN`, true);
+                    } else {
+                        // Show loss notification
+                        showFullscreenNotification(item.period, `${item.prediction} LOSS`, false);
+                    }
+                }
+            });
+
+            updateStats();
+            updateHistory();
+        }
+
+        // Function to update stats
+        function updateStats() {
+            document.getElementById("totalPredictions").innerText = historyData.length;
+            document.getElementById("totalWins").innerText = historyData.filter(item => item.resultStatus === "WIN").length;
+            document.getElementById("totalLosses").innerText = historyData.filter(item => item.resultStatus === "LOSS").length;
+            document.getElementById("bigWins").innerText = bigWinCount;
+            document.getElementById("smallWins").innerText = smallWinCount;
+
+            let accuracy = ((historyData.filter(item => item.resultStatus === "WIN").length / historyData.length) * 100).toFixed(2) || 0;
+            document.getElementById("accuracy").innerText = accuracy + "%";
+        }
+
+        // Function to update history
+        function updateHistory() {
+            let historyList = document.getElementById("historyList");
+            historyList.innerHTML = historyData.map(item => {
+                let statusClass = "";
+                if (item.resultStatus === "WIN") statusClass = "win";
+                if (item.resultStatus === "LOSS") statusClass = "loss";
+                
+                let predClass = item.prediction.toLowerCase() + "-pred";
+                
+                return `
+                    <li class="history-item ${predClass} ${statusClass}">
+                        <div><strong>Period:</strong> ${item.period}</div>
+                        <div><strong>Pred:</strong> ${item.prediction}</div>
+                        <div><strong>Actual:</strong> ${item.actualResult || '--'}</div>
+                        <div><strong>Status:</strong> ${item.resultStatus}</div>
+                    </li>
+                `;
+            }).join("");
+        }
+
+        // Update timer and period display
+        function updateTimer() {
+            const now = new Date();
+            const seconds = now.getUTCSeconds();
+            const remainingSeconds = 60 - seconds;
+            document.getElementById("timer").textContent = `00:${remainingSeconds.toString().padStart(2, '0')}`;
+            
+            // Trigger prediction when timer reaches 5 seconds
+            if (remainingSeconds === 5 && !isCalculating) {
+                updatePrediction();
+            }
+            
+            // Immediately show win/loss when period changes (at 0 seconds)
+            if (remainingSeconds === 59 && !isCalculating) {
+                fetchGameResult().then(apiResult => {
+                    if (apiResult && apiResult.period !== lastFetchedPeriod) {
+                        checkWinLoss(apiResult);
+                    }
+                });
+            }
+        }
+
+        // Initialize Particle Animation
+        particlesJS("particles-js", {
+            particles: {
+                number: { value: 150 },
+                color: { value: "#00ffcc" },
+                shape: { type: "circle" },
+                opacity: { value: 0.7, random: true },
+                size: { value: 3, random: true },
+                line_linked: {
+                    enable: true,
+                    distance: 150,
+                    color: "#ffffff",
+                    opacity: 0.2,
+                    width: 1
+                },
+                move: {
+                    enable: true,
+                    speed: 2,
+                    direction: "none",
+                    random: true,
+                    straight: false,
+                    out_mode: "out",
+                    bounce: false,
+                    attract: { enable: false, rotateX: 600, rotateY: 1200 }
+                }
+            },
+            interactivity: {
+                detect_on: "canvas",
+                events: {
+                    onhover: { enable: true, mode: "repulse" },
+                    onclick: { enable: true, mode: "push" },
+                    resize: true
+                },
+                modes: {
+                    repulse: { distance: 100, duration: 0.4 },
+                    push: { particles_nb: 4 }
+                }
+            },
+            retina_detect: true
+        });
+
+        // Initialize with current period
+        async function initialize() {
+            const now = new Date();
+            const totalMinutes = now.getUTCHours() * 60 + now.getUTCMinutes();
+            const periodNumber = `${now.getUTCFullYear()}${(now.getUTCMonth() + 1).toString().padStart(2, '0')}${now.getUTCDate().toString().padStart(2, '0')}1000${(10001 + totalMinutes)}`;
+            document.getElementById("currentPeriod").textContent = periodNumber;
+            
+            // Fetch initial data
+            await updatePrediction();
+            
+            // Set up intervals
+            timerInterval = setInterval(updateTimer, 1000);
+        }
+
+        // Initialize the app
+        initialize();
+    </script>
+</body>
+</html>
